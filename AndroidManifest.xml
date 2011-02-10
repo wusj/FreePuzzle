@@ -7,12 +7,14 @@
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".FreePuzzle"
-                  android:label="@string/app_name" android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|fontScale">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                  android:label="@string/app_name" android:configChanges="">
+			<intent-filter>
+				<action android:name="android.intent.action.SEND" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="image/*" />
+			</intent-filter>
         </activity>
 
     </application>
+    <uses-sdk android:minSdkVersion="4" />
 </manifest>
