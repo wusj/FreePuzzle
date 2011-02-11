@@ -25,6 +25,7 @@ public class FreePuzzle extends Activity {
 	{
         DisplayMetrics dm = new DisplayMetrics();
 		Bitmap bm = null;
+		int blockWidth, blockHeight;
 		
 		try 
 		{
@@ -32,7 +33,6 @@ public class FreePuzzle extends Activity {
 	                getContentResolver(), uri);
 	        int height = image.getHeight();
 	        int width = image.getWidth();
-	        int desiredHeight, desiredWidth;
 	        
 	        if (width > height) {
 	            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -41,16 +41,22 @@ public class FreePuzzle extends Activity {
 	        }
 	        
 	        getWindowManager().getDefaultDisplay().getMetrics(dm);
-	        desiredHeight = dm.heightPixels;
-	        desiredWidth = dm.widthPixels;
 			Log.e("FreePuzzle", "Bitmap " + width + " "+ height);
-			Log.e("FreePuzzle", "Screen " + desiredWidth + " "+ desiredHeight);
-	        float scalex = (float)desiredWidth/width;
-	        float scaley = (float)desiredHeight/height;
+			
+			blockWidth = 160;
+			blockHeight = 160;
+			
+	        float scalex = (float)dm.widthPixels/width;
+	        float scaley = (float)dm.heightPixels/height;
 	        float scale = Math.min(scalex, scaley);
 	        width = (int)(width * scale);
 	        height = (int)(height * scale);
+			
+			width = (width + (blockWidth - 1)) / blockWidth * blockWidth;
+			height = (height + (blockHeight - 1)) / blockHeight * blockHeight;
+			
 			Log.e("FreePuzzle", "genBitmap " + width + " "+ height);
+			
 	        bm = Bitmap.createScaledBitmap(image, width, height, false);
         } 
 		catch (final IOException e1) {
@@ -61,10 +67,27 @@ public class FreePuzzle extends Activity {
         linLayout.setOrientation(LinearLayout.VERTICAL);
         linLayout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         
-        ImageView tv = new ImageView(this);
-        tv.setImageBitmap(bm);
-        linLayout.addView(tv, new LayoutParams(
+        linLayout.addView(new View(this), new LinearLayout.LayoutParams(
+        		LayoutParams.FILL_PARENT, 0, 1));
+
+        LinearLayout hl = new LinearLayout(this);
+        hl.setOrientation(LinearLayout.HORIZONTAL);
+        
+        hl.addView(new View(this), new LinearLayout.LayoutParams(
+        		0, LayoutParams.FILL_PARENT, 1));
+
+        PuzzleView tv = new PuzzleView(this, bm, blockWidth, blockHeight);
+        hl.addView(tv, new LayoutParams(
         		LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        
+        hl.addView(new View(this), new LinearLayout.LayoutParams(
+        		0, LayoutParams.FILL_PARENT, 1));
+        
+        linLayout.addView(hl, new LayoutParams(
+        		LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        
+        linLayout.addView(new View(this), new LinearLayout.LayoutParams(
+        		LayoutParams.FILL_PARENT,0, 1));
         
         return linLayout;
 	}
