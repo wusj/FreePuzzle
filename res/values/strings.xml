@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, FreePuzzle!</string>
-    <string name="app_name">Free Puzzle</string>
+    <string name="app_name">自由拼图</string>
+    <string name="select_pic">选择图片</string>
+    <string name="website">http://sw.wolink.org</string>
+    <string name="help">感谢您安装本应用，有两种方式可以开始拼图游戏：\n\n1、点击下面按钮选择一张图片。\n2、在其它应用（比如媒体库、浏览器等）中，遇到图片时，选择菜单中的共享，然后选择自由拼图。</string>
 </resources>
