@@ -20,6 +20,9 @@ public class PuzzleView extends View{
 	private int mVBlocks;
 	private int mFloatX, mFloatY, mFloatW, mFloatH;
 	private Paint mSepPaint;
+	private boolean mIsFinished;
+	
+	private OnActionListener mOnActionListener;
 	
 	public PuzzleView(Context context, Bitmap bitmap, int w, int h){
 		super(context);
@@ -38,20 +41,30 @@ public class PuzzleView extends View{
         	mBlocks[i] = new ImageBlock(bm, i);
         }
         
-        Random rdm = new Random(System.currentTimeMillis());
-        for(int i = 0; i < mBlocks.length - 1; i++) {
-        	int randPos = Math.abs(rdm.nextInt()) % (mBlocks.length - 1);
-        	ImageBlock temp = mBlocks[i];
-        	mBlocks[i] = mBlocks[randPos];
-        	mBlocks[randPos] = temp;
-        }	
+        do {
+	        Random rdm = new Random(System.currentTimeMillis());
+	        for(int i = 0; i < mBlocks.length; i++) {
+	        	int randPos = Math.abs(rdm.nextInt()) % (mBlocks.length - 1);
+	        	ImageBlock temp = mBlocks[i];
+	        	mBlocks[i] = mBlocks[randPos];
+	        	mBlocks[randPos] = temp;
+	        }	
+        } while(IsRightPosition()); 
         
         mFloatPos = -1;
         
         mSepPaint = new Paint();
         mSepPaint.setStyle(Paint.Style.FILL);
         mSepPaint.setColor(0x88FFFFFF);
+        
+        mOnActionListener = null;
+        mIsFinished = false;
 	}
+	
+	public void SetOnActionListener(OnActionListener listener) {
+		mOnActionListener = listener;
+	}
+	
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     	setMeasuredDimension(mViewWidth, mViewHeight);
@@ -105,6 +118,10 @@ public class PuzzleView extends View{
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
+		if (mIsFinished) {
+			return true;
+		}
+		
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			mFloatPos = (int)event.getY() / mBlockHeight * mHBlocks + 
@@ -132,18 +149,56 @@ public class PuzzleView extends View{
 				} else {
 					int newPos = (int)event.getY() / mBlockHeight * mHBlocks + 
 						(int)event.getX() / mBlockWidth;
-					ImageBlock temp = mBlocks[mFloatPos];
-					mBlocks[mFloatPos] = mBlocks[newPos];
-					mBlocks[newPos] = temp;
+					
+					if (newPos != mFloatPos) {
+						ImageBlock temp = mBlocks[mFloatPos];
+						mBlocks[mFloatPos] = mBlocks[newPos];
+						mBlocks[newPos] = temp;
+						
+						if (IsRightPosition()) {
+							if (mOnActionListener != null) {
+								mOnActionListener.onFinish(this);
+							}
+							mIsFinished = true;
+						}
+						else {
+							if (mOnActionListener != null) {
+								mOnActionListener.onSwap(this);
+							}
+						}
+					}
 				}
 				
 				mFloatPos = -1;
-				this.invalidate();
-				// check finish 
+				postInvalidate();
 			}
-			//Log.e("PuzzleView", "ACTION_UP " + event.getX() + " " + event.getY());
 			break;
 		}
 		return true;
 	}
+	
+	private boolean IsRightPosition() {
+        for(int i = 0; i < mBlocks.length; i++) {
+        	if (mBlocks[i].mId != i) {
+        		return false;
+        	}
+        }		
+        return true;
+	}
+	
+    /**
+     * Interface definition for a callback to be invoked when a puzzle is swaped and finished.
+     */
+    public interface OnActionListener {
+        /**
+         * Called when a block has been swaped.
+         *
+         */
+        void onSwap(PuzzleView v);
+        
+        /** 
+         * Called when puzzle is finished.
+         */
+        void onFinish(PuzzleView v);
+    }
 }

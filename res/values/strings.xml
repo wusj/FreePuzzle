@@ -4,4 +4,6 @@
     <string name="select_pic">选择图片</string>
     <string name="website">http://sw.wolink.org</string>
     <string name="help">感谢您安装本应用，有两种方式可以开始拼图游戏：\n\n1、点击下面按钮选择一张图片。\n2、在其它应用（比如媒体库、浏览器等）中，遇到图片时，选择菜单中的共享，然后选择自由拼图。</string>
+    <string name="author">沃林克软件工作室 © 版权所有</string>
+    <string name="choose_a_pic">选择图片</string>
 </resources>
